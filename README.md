@@ -68,6 +68,11 @@ In the above example, we have therefore exapnded a single data point into 3 more
 
 We will be using the transformer model as explained in this [blog](https://ai.plainenglish.io/lets-pay-attention-to-transformers-a1c2dc566dbd) to perform sequence to sequence learning on our dataset. Here we will be treating the english description/question as our source and the corresponding python code as the target for our training. 
 
+## Loss function -  Cross Entropy with label smoothening
+
+We have used augmentations in our dataset to mask variable literals. This means that our model can predict a variety of values for a particular variable and all of them are correct as long as the predictions are consistent through the code. This would mean that our training labels are not very certain and hence it would make more sense to treat them to be correct with probability 1- smooth_eps and incorrect otherwise. This is what label smoothening does. By adding [label smoothening](https://arxiv.org/abs/1906.02629) to Cross Entropy we ensure that the model does not become too confident on predicting some of our varibles that can be replced via augmentations. 
+
+# Example Outputs
 
 
 
