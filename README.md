@@ -64,13 +64,29 @@ def add_two_numbers (var_1 ,var_2 ):
 
 In the above example, we have therefore exapnded a single data point into 3 more data points using our random variable replacement technique.
 
-## Model Archietecture
+## Model Architecture
+![Transformer](/res/transformer_multihead.png)
 
-We will be using the transformer model as explained in this [blog](https://ai.plainenglish.io/lets-pay-attention-to-transformers-a1c2dc566dbd) to perform sequence to sequence learning on our dataset. Here we will be treating the english description/question as our source and the corresponding python code as the target for our training. 
+We will be using the transformer model as explained in this [blog](https://ai.plainenglish.io/lets-pay-attention-to-transformers-a1c2dc566dbd) to perform sequence to sequence learning on our dataset. Here we will be treating the english description/question as our source(SRC) and the corresponding python code as the target(TRG) for our training. 
+
+### Tokenizing SRC and TRG sequences
+
+We use spacy's default tokenizer to tokenize our SRC sequence.
+```
+SRC = [' ', 'write', 'a', 'python', 'function', 'to', 'add', 'two', 'user', 'provided', 'numbers', 'and', 'return', 'the', 'sum']
+```
+
+We use python's source code [tokenizer](https://docs.python.org/3/library/tokenize.html) to tokenize our TRG. Python's tokenizer returns several attributes for each token. We only extract the token type and the corresponding string attribute in form of a tuple(i.e., (token_type_int, token_string)) as the final token. Our TRG is a sequence of such tuples.
+```
+TRG = [(57, 'utf-8'), (1, 'def'), (1, 'add_two_numbers'), (53, '('), (1, 'num1'), (53, ','), (1, 'var_1'), (53, ')'), (53, ':'), (4, '\n'), (5, '    '), (1, 'sum'), (53, '='), (1, 'num1'), (53, '+'), (1, 'var_1'), (4, '\n'), (1, 'return'), (1, 'sum'), (4, ''), (6, ''), (0, '')]
+```
 
 ## Loss function -  Cross Entropy with label smoothening
 
 We have used augmentations in our dataset to mask variable literals. This means that our model can predict a variety of values for a particular variable and all of them are correct as long as the predictions are consistent through the code. This would mean that our training labels are not very certain and hence it would make more sense to treat them to be correct with probability 1- smooth_eps and incorrect otherwise. This is what label smoothening does. By adding [label smoothening](https://arxiv.org/abs/1906.02629) to Cross Entropy we ensure that the model does not become too confident on predicting some of our varibles that can be replced via augmentations. 
+
+# Sample Multi-Head Attention Map
+![Attention Map for a function that adds two numbers](/res/attention_python_code_generator.png)
 
 # Example Outputs
 
