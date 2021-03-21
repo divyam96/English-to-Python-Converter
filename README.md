@@ -23,6 +23,10 @@ We will be using this precurated [Dataset](https://drive.google.com/file/d/1rHb0
 # English Description 3
 
 <Python Code 3>
+
+.
+.
+.
 ```
 
 Each English description/question starts with a '#' and is followed by its corresponding python code. Each data point that we look for comprises of a question and its corresponding python code. We can therefore look for the first charecter in each line to detrmine the start of the next data point. All lines between two lines starting with a '#' form a part of the python solution.
@@ -84,6 +88,10 @@ TRG = [(57, 'utf-8'), (1, 'def'), (1, 'add_two_numbers'), (53, '('), (1, 'num1')
 ## Loss function -  Cross Entropy with label smoothening
 
 We have used augmentations in our dataset to mask variable literals. This means that our model can predict a variety of values for a particular variable and all of them are correct as long as the predictions are consistent through the code. This would mean that our training labels are not very certain and hence it would make more sense to treat them to be correct with probability 1- smooth_eps and incorrect otherwise. This is what label smoothening does. By adding [label smoothening](https://arxiv.org/abs/1906.02629) to Cross Entropy we ensure that the model does not become too confident on predicting some of our varibles that can be replced via augmentations. 
+
+We use the validation loss and training loss to determine when our model is trained. The model with minimum validation loss is used as the final trained model. 
+
+It is important to note that label smoothening leads to much higher loss values as compared to models that do not make use of label smoothening. But this is as expected as we do not intetend to be certain with our label predictions. This is particularly the case with variables as there can be multiple correct options as long as the predictions are consistent through the target code sequence. 
 
 # Sample Multi-Head Attention Map
 ![Attention Map for a function that adds two numbers](/res/attention_python_code_generator.png)
