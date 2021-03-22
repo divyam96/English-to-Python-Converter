@@ -1,5 +1,5 @@
 # English-to-Python-Converter
-This is an attempt to use transformers and self attention in order to convert English descriptions into Python code.
+This is an attempt to use transformers and self-attention in order to convert English descriptions into Python code.
 
 [Notebook](https://github.com/divyam96/English-to-Python-Converter/blob/main/English_to_Python.ipynb) 
 
@@ -9,7 +9,7 @@ This is an attempt to use transformers and self attention in order to convert En
 
 ## Data Cleaning
 
-We will be using this precurated [Dataset](https://drive.google.com/file/d/1rHb0FQ5z5ZpaY2HpyFGY6CeyDG0kTLoO/view?usp=sharing) for training our transformer model. The format of the data is as follows:
+We will be using this pre-curated [Dataset](https://drive.google.com/file/d/1rHb0FQ5z5ZpaY2HpyFGY6CeyDG0kTLoO/view?usp=sharing) for training our transformer model. The format of the data is as follows:
 
 ```
 # English Description 1
@@ -29,13 +29,13 @@ We will be using this precurated [Dataset](https://drive.google.com/file/d/1rHb0
 .
 ```
 
-Each English description/question starts with a '#' and is followed by its corresponding python code. Each data point that we look for comprises of a question and its corresponding python code. We can therefore look for the first charecter in each line to detrmine the start of the next data point. All lines between two lines starting with a '#' form a part of the python solution.
+Each English description/question starts with a '#' and is followed by its corresponding python code. Each data point that we look for comprises of a question and its corresponding Python code. We can therefore look for the first character in each line to determine the start of the next data point. All lines between two lines starting with a '#' form a part of the python solution.
 
-To further parse out the python code we make use of python's source code [tokenizer](https://docs.python.org/3/library/tokenize.html) in order to effectively deal with code syntax and indentation(spaces and tabs). 
+To further parse out the python code we make use of python's source code [tokenizer](https://docs.python.org/3/library/tokenize.html) to effectively deal with code syntax and indentation(spaces and tabs). 
 
 ## Data Augmentation - Random Variable Replacement
 
-Since we have mere 5000 data points, we make use of data augmentations to increase the size of our dataset. While tokenizing the python code, we mask the names of certain variables randomly(with 'var_1, 'var_2' etc) to ensure that the model that we train does not merly fixate on the way the variables are named and actually tries to understand the inhrent logic and syntax of the python code.
+Since we have mere 5000 data points, we make use of data augmentations to increase the size of our dataset. While tokenizing the python code, we mask the names of certain variables randomly(with 'var_1, 'var_2' etc) to ensure that the model that we train does not merely fixate on the way the variables are named and tries to understand the inherent logic and syntax of the python code.
 
 For example consider the folowing program:
 
@@ -66,12 +66,12 @@ def add_two_numbers (var_1 ,var_2 ):
     return sum
 ```
 
-In the above example, we have therefore exapnded a single data point into 3 more data points using our random variable replacement technique.
+In the above example, we have therefore expanded a single data point into 3 more data points using our random variable replacement technique.
 
 ## Model Architecture
 ![Transformer](/res/transformer_multihead.png)
 
-We will be using the transformer model as explained in this [blog](https://ai.plainenglish.io/lets-pay-attention-to-transformers-a1c2dc566dbd) to perform sequence to sequence learning on our dataset. Here we will be treating the english description/question as our source(SRC) and the corresponding python code as the target(TRG) for our training. 
+We will be using the transformer model as explained in this [blog](https://ai.plainenglish.io/lets-pay-attention-to-transformers-a1c2dc566dbd) to perform sequence to sequence learning on our dataset. Here we will be treating the English description/question as our source(SRC) and the corresponding Python code as the target(TRG) for our training. 
 
 ### Tokenizing SRC and TRG sequences
 
@@ -87,11 +87,11 @@ TRG = [(57, 'utf-8'), (1, 'def'), (1, 'add_two_numbers'), (53, '('), (1, 'num1')
 
 ## Loss function -  Cross Entropy with label smoothening
 
-We have used augmentations in our dataset to mask variable literals. This means that our model can predict a variety of values for a particular variable and all of them are correct as long as the predictions are consistent through the code. This would mean that our training labels are not very certain and hence it would make more sense to treat them to be correct with probability 1- smooth_eps and incorrect otherwise. This is what label smoothening does. By adding [label smoothening](https://arxiv.org/abs/1906.02629) to Cross Entropy we ensure that the model does not become too confident on predicting some of our varibles that can be replced via augmentations. 
+We have used augmentations in our dataset to mask variable literals. This means that our model can predict a variety of values for a particular variable and all of them are correct as long as the predictions are consistent through the code. This would mean that our training labels are not very certain and hence it would make more sense to treat them to be correct with probability 1- smooth_eps and incorrect otherwise. This is what label smoothening does. By adding [label smoothening](https://arxiv.org/abs/1906.02629) to Cross-Entropy we ensure that the model does not become too confident in predicting some of our variables that can be replaced via augmentations. 
 
 We use the validation loss and training loss to determine when our model is trained. The model with minimum validation loss is used as the final trained model. 
 
-It is important to note that label smoothening leads to much higher loss values as compared to models that do not make use of label smoothening. But this is as expected as we do not intetend to be certain with our label predictions. This is particularly the case with variables as there can be multiple correct options as long as the predictions are consistent through the target code sequence. 
+It is important to note that label smoothening leads to much higher loss values as compared to models that do not make use of label smoothening. But this is as expected as we do not intend to be certain with our label predictions. This is particularly the case with variables as there can be multiple correct options as long as the predictions are consistent through the target code sequence. 
 
 # Sample Multi-Head Attention Map
 ![Attention Map for a function that adds two numbers](/res/attention_python_code_generator.png)
